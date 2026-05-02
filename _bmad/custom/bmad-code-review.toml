@@ -1,0 +1,10 @@
+# Team override for bmad-code-review — ph-payroll-time-api
+# Committed to repo — applies to all developers.
+# Appends to persistent_facts from base customize.toml.
+
+[workflow]
+
+persistent_facts = [
+  "file:{project-root}/CLAUDE.md",
+  "file:{project-root}/_bmad/custom/ph-code-review-checklist.md",
+]

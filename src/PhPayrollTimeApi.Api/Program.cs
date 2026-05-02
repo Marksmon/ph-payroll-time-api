@@ -225,12 +225,19 @@ app.MapFallback(() => Results.Problem(
     statusCode: 404,
     detail: "The requested endpoint does not exist."));
 
-// Seed demo data in Development only
+// Seed demo data in Development only (non-fatal if DB unavailable)
 if (app.Environment.IsDevelopment())
 {
-    using var scope = app.Services.CreateScope();
-    var db = scope.ServiceProvider.GetRequiredService<PhPayrollTimeApi.Infrastructure.Persistence.AppDbContext>();
-    await PhPayrollTimeApi.Infrastructure.Persistence.DataSeeder.SeedAsync(db);
+    try
+    {
+        using var scope = app.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<PhPayrollTimeApi.Infrastructure.Persistence.AppDbContext>();
+        await PhPayrollTimeApi.Infrastructure.Persistence.DataSeeder.SeedAsync(db);
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogWarning(ex, "DataSeeder skipped — database unavailable");
+    }
 }
 
 if (app.Environment.IsDevelopment())

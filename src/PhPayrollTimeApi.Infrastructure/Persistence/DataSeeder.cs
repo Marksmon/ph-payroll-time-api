@@ -53,8 +53,8 @@ public static class DataSeeder
             }
         );
 
-        // Normal daytime shift: 8am–5pm Asia/Manila
-        var scheduleStart = new DateTimeOffset(seedYear, 5, 1, 8, 0, 0, TimeSpan.FromHours(8));
+        // Normal daytime shift: 8am–5pm Asia/Manila stored as UTC (Npgsql 8 requires UTC offset)
+        var scheduleStart = new DateTimeOffset(seedYear, 5, 1, 0, 0, 0, TimeSpan.Zero); // midnight UTC = 8am PHT
         db.ShiftSchedules.Add(new ShiftSchedule
         {
             Id = Guid.NewGuid(), EmployeeId = EmployeeId1,
@@ -67,8 +67,8 @@ public static class DataSeeder
             IsActive = true, CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow
         });
 
-        // Night shift crossing midnight: 10pm–6am Asia/Manila
-        var nightStart = new DateTimeOffset(seedYear, 5, 2, 22, 0, 0, TimeSpan.FromHours(8));
+        // Night shift crossing midnight: 10pm–6am Asia/Manila stored as UTC
+        var nightStart = new DateTimeOffset(seedYear, 5, 2, 14, 0, 0, TimeSpan.Zero); // 14:00 UTC = 22:00 PHT
         db.ShiftSchedules.Add(new ShiftSchedule
         {
             Id = Guid.NewGuid(), EmployeeId = EmployeeId1,
