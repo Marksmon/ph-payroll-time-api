@@ -34,6 +34,12 @@ public class GlobalExceptionHandler : IExceptionHandler
             case StaleApprovalException ex:
                 (status, type, title, detail, extensions) = (409, ProblemTypes.StaleApproval, "Stale Approval", ex.Message, null);
                 break;
+            case ConflictException ex:
+                (status, type, title, detail, extensions) = (409, ProblemTypes.Conflict, "Conflict", ex.Message, null);
+                break;
+            case UnprocessableEntityException ex:
+                (status, type, title, detail, extensions) = (422, ProblemTypes.UnprocessableEntity, "Unprocessable Entity", ex.Message, null);
+                break;
             case ComputationInvariantException ex:
                 (status, type, title, detail, extensions) = (422, ProblemTypes.ComputationInvariant, "Computation Invariant Violated", ex.Message,
                     new Dictionary<string, object?> { ["violations"] = ex.Violations });

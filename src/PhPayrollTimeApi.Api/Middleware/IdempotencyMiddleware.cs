@@ -16,9 +16,14 @@ public class IdempotencyMiddleware
         _cache = cache;
     }
 
+    private static bool RequiresIdempotencyKey(string path) =>
+        path.EndsWith("/logs", StringComparison.OrdinalIgnoreCase) ||
+        path.EndsWith("/commit", StringComparison.OrdinalIgnoreCase);
+
     public async Task InvokeAsync(HttpContext context)
     {
-        if (!HttpMethods.IsPost(context.Request.Method))
+        if (!HttpMethods.IsPost(context.Request.Method) ||
+            !RequiresIdempotencyKey(context.Request.Path.Value ?? ""))
         {
             await _next(context);
             return;
@@ -51,7 +56,15 @@ public class IdempotencyMiddleware
         using var buffer = new MemoryStream();
         context.Response.Body = buffer;
 
-        await _next(context);
+        try
+        {
+            await _next(context);
+        }
+        catch
+        {
+            context.Response.Body = originalBody;
+            throw;
+        }
 
         buffer.Seek(0, SeekOrigin.Begin);
         var body = await new StreamReader(buffer).ReadToEndAsync();

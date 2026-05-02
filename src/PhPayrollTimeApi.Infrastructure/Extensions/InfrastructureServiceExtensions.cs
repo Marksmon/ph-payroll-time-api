@@ -16,6 +16,12 @@ public static class InfrastructureServiceExtensions
         services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
+        services.AddScoped<IEmployeeRepository, EfEmployeeRepository>();
+        services.AddScoped<IShiftScheduleRepository, EfShiftScheduleRepository>();
+        services.AddScoped<IWorkSchedulePatternRepository, EfWorkSchedulePatternRepository>();
+        services.AddScoped<IHolidayRepository, EfHolidayRepository>();
+        services.AddScoped<ITimeLogRepository, EfTimeLogRepository>();
+
         services.AddSingleton<IClockProvider, SystemClockProvider>();
         // Epics 1-7: HardcodedFeatureFlagProvider (all flags true). Epic 8 Story 8.2 switches to DbFeatureFlagProvider.
         services.AddSingleton<IFeatureFlagProvider, HardcodedFeatureFlagProvider>();
