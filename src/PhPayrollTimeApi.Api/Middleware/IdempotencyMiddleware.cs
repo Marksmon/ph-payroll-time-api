@@ -27,14 +27,13 @@ public class IdempotencyMiddleware
         if (!context.Request.Headers.TryGetValue("Idempotency-Key", out var keyValue))
         {
             context.Response.StatusCode = StatusCodes.Status400BadRequest;
-            context.Response.ContentType = "application/problem+json";
             await context.Response.WriteAsJsonAsync(new
             {
                 type = ProblemTypes.Validation,
                 title = "Missing Idempotency-Key",
                 status = 400,
                 detail = "POST requests to this endpoint require an Idempotency-Key header."
-            });
+            }, options: null, contentType: "application/problem+json");
             return;
         }
 
@@ -65,7 +64,7 @@ public class IdempotencyMiddleware
         context.Response.Body = originalBody;
     }
 
-    internal static string ComputeCacheKey(string method, string path, string idempotencyKey)
+    public static string ComputeCacheKey(string method, string path, string idempotencyKey)
     {
         var input = $"{method}|{path}|{idempotencyKey}";
         var hash = SHA256.HashData(Encoding.UTF8.GetBytes(input));

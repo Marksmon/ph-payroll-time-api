@@ -19,14 +19,16 @@ public class AppDbContext : DbContext
     public DbSet<AuditRecord> AuditRecords => Set<AuditRecord>();
     public DbSet<FeatureFlag> FeatureFlags => Set<FeatureFlag>();
 
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        // Global convention: all DateTimeOffset properties → PostgreSQL timestamptz
+        configurationBuilder.Properties<DateTimeOffset>().HaveColumnType("timestamptz");
+        configurationBuilder.Properties<DateTimeOffset?>().HaveColumnType("timestamptz");
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
-        // Global convention: all DateTimeOffset properties → PostgreSQL timestamptz
-        modelBuilder.Properties<DateTimeOffset>().HaveColumnType("timestamptz");
-        modelBuilder.Properties<DateTimeOffset?>().HaveColumnType("timestamptz");
-
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
     }
 }

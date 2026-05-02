@@ -60,9 +60,16 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
             Type = ProblemTypes.Validation,
             Status = StatusCodes.Status400BadRequest
         };
-        return new BadRequestObjectResult(problem)
+        return new ContentResult
         {
-            ContentTypes = { "application/problem+json" }
+            StatusCode = StatusCodes.Status400BadRequest,
+            ContentType = "application/problem+json",
+            Content = System.Text.Json.JsonSerializer.Serialize(problem,
+                new System.Text.Json.JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase,
+                    DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+                })
         };
     };
 });
@@ -142,14 +149,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             {
                 context.HandleResponse();
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                context.Response.ContentType = "application/problem+json";
                 await context.Response.WriteAsJsonAsync(new
                 {
                     type = ProblemTypes.Unauthorized,
                     title = "Unauthorized",
                     status = 401,
                     detail = "A valid RS256 Bearer token is required."
-                });
+                }, options: null, contentType: "application/problem+json");
             }
         };
     });
