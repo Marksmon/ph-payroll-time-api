@@ -10,6 +10,8 @@ public static class ProblemTypes
     public const string NotFound = $"{Base}/not-found";
     public const string OverlappingSchedule = $"{Base}/conflict/overlapping-schedule";
     public const string StaleApproval = $"{Base}/conflict/stale-approval";
+    public const string Conflict = $"{Base}/conflict";
+    public const string UnprocessableEntity = $"{Base}/unprocessable-entity";
     public const string ComputationInvariant = $"{Base}/computation-invariant";
     public const string RateLimitExceeded = $"{Base}/rate-limit-exceeded";
     public const string InternalError = $"{Base}/internal-error";

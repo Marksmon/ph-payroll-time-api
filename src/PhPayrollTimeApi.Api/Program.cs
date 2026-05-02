@@ -141,7 +141,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = rsaKey,
-            ValidAlgorithms = new[] { SecurityAlgorithms.RsaSha256 }   // NFR-S2: reject alg:none + HS256
+            ValidAlgorithms = new[] { SecurityAlgorithms.RsaSha256 },   // NFR-S2: reject alg:none + HS256
+            RoleClaimType = "role",   // MapInboundClaims=false keeps short claim names
+            NameClaimType = "sub"
         };
         options.Events = new JwtBearerEvents
         {
