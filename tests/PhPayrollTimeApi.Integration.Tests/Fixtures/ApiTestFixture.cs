@@ -17,9 +17,25 @@ public class ApiTestFixture : WebApplicationFactory<Program>
     public const string TestIssuer = "ph-payroll-time-api";
     public const string TestAudience = "ph-payroll-time-api-clients";
 
+    // Write test RSA key to a temp directory so Program.cs can read it on startup
+    private static readonly string _keysDir = Path.Combine(Path.GetTempPath(), "ph-payroll-time-api-test-keys");
+    private static readonly string _pubKeyPath = Path.Combine(_keysDir, "jwt-public.pem");
+    private static readonly string _privKeyPath = Path.Combine(_keysDir, "jwt-private.pem");
+
+    static ApiTestFixture()
+    {
+        Directory.CreateDirectory(_keysDir);
+        File.WriteAllText(_pubKeyPath, TestRsa.ExportSubjectPublicKeyInfoPem());
+        File.WriteAllText(_privKeyPath, TestRsa.ExportPkcs8PrivateKeyPem());
+    }
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Test");
+
+        // Point Program.cs key paths at our temp PEM files before the app starts
+        builder.UseSetting("Jwt:PublicKeyPath", _pubKeyPath);
+        builder.UseSetting("Jwt:PrivateKeyPath", _privKeyPath);
 
         builder.ConfigureServices(services =>
         {

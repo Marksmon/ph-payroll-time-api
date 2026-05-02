@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
 using PhPayrollTimeApi.Api.Constants;
 using PhPayrollTimeApi.Domain.Exceptions;
 
@@ -15,28 +16,37 @@ public class GlobalExceptionHandler : IExceptionHandler
         Exception exception,
         CancellationToken cancellationToken)
     {
-        var (status, type, title, detail, extensions) = exception switch
+        int status;
+        string type, title, detail;
+        IDictionary<string, object?>? extensions;
+
+        switch (exception)
         {
-            EntityNotFoundException ex =>
-                (404, ProblemTypes.NotFound, "Not Found", ex.Message, (IDictionary<string, object?>?)null),
-            DomainValidationException ex =>
-                (400, ProblemTypes.Validation, "Validation Error", ex.Message, null),
-            ScheduleOverlapException ex =>
-                (409, ProblemTypes.ConflictOverlappingSchedule, "Schedule Conflict", ex.Message, null),
-            StaleApprovalException ex =>
-                (409, ProblemTypes.ConflictStaleApproval, "Stale Approval", ex.Message, null),
-            ComputationInvariantException ex =>
-                (422, ProblemTypes.ComputationInvariant, "Computation Invariant Violated", ex.Message,
-                    (IDictionary<string, object?>)new Dictionary<string, object?> { ["violations"] = ex.Violations }),
-            _ =>
-                (500, ProblemTypes.InternalError, "An unexpected error occurred", "Please try again later.", null)
-        };
+            case EntityNotFoundException ex:
+                (status, type, title, detail, extensions) = (404, ProblemTypes.NotFound, "Not Found", ex.Message, null);
+                break;
+            case DomainValidationException ex:
+                (status, type, title, detail, extensions) = (400, ProblemTypes.Validation, "Validation Error", ex.Message, null);
+                break;
+            case ScheduleOverlapException ex:
+                (status, type, title, detail, extensions) = (409, ProblemTypes.OverlappingSchedule, "Schedule Conflict", ex.Message, null);
+                break;
+            case StaleApprovalException ex:
+                (status, type, title, detail, extensions) = (409, ProblemTypes.StaleApproval, "Stale Approval", ex.Message, null);
+                break;
+            case ComputationInvariantException ex:
+                (status, type, title, detail, extensions) = (422, ProblemTypes.ComputationInvariant, "Computation Invariant Violated", ex.Message,
+                    new Dictionary<string, object?> { ["violations"] = ex.Violations });
+                break;
+            default:
+                (status, type, title, detail, extensions) = (500, ProblemTypes.InternalError, "An unexpected error occurred", "Please try again later.", null);
+                break;
+        }
 
         if (status == 500)
             _logger.LogError(exception, "Unhandled exception");
 
         httpContext.Response.StatusCode = status;
-        httpContext.Response.ContentType = "application/problem+json";
 
         var problem = new ProblemDetails
         {
@@ -50,7 +60,7 @@ public class GlobalExceptionHandler : IExceptionHandler
             foreach (var (key, value) in extensions)
                 problem.Extensions[key] = value;
 
-        await httpContext.Response.WriteAsJsonAsync(problem, cancellationToken);
+        await httpContext.Response.WriteAsJsonAsync(problem, options: null, contentType: "application/problem+json", cancellationToken: cancellationToken);
         return true;
     }
 }
