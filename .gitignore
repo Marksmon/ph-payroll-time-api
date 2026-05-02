@@ -1,0 +1,40 @@
+## .NET
+*.user
+*.suo
+.vs/
+obj/
+bin/
+*.swp
+*.sln.docstates
+
+## NuGet
+packages/
+*.nupkg
+*.snupkg
+project.lock.json
+.nuget/
+
+## Logs
+logs/
+*.log
+
+## Environment / Secrets
+.env
+.env.*
+appsettings.Local.json
+**/appsettings.Local.json
+
+## Test results
+TestResults/
+coverage/
+*.trx
+
+## OS
+.DS_Store
+Thumbs.db
+
+## Docker
+docker-compose.override.yml
+
+## JWT Keys (generated at runtime — never commit private keys)
+**/keys/*.pem

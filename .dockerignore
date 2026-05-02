@@ -1,0 +1,13 @@
+**/.vs
+**/.git
+**/obj
+**/bin
+**/*.user
+**/.dockerignore
+**/docker-compose*
+**/TestResults
+**/logs
+README.md
+_bmad/
+_bmad-output/
+docs/
