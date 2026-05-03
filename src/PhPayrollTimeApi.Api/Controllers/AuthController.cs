@@ -12,7 +12,6 @@ public class AuthController : ControllerBase
 {
     [HttpPost("token")]
     [AllowAnonymous]
-    [ApiExplorerSettings(GroupName = "non-production")]
     public IActionResult GenerateToken(
         [FromBody] TokenRequest request,
         [FromServices] IWebHostEnvironment env,

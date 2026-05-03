@@ -103,6 +103,14 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 
+    options.AddSecurityDefinition("Idempotency-Key", new OpenApiSecurityScheme
+    {
+        Type = SecuritySchemeType.ApiKey,
+        In = ParameterLocation.Header,
+        Name = "Idempotency-Key",
+        Description = "Unique UUID per mutating request. Same key replays the cached response. Generate any UUID, e.g. a1b2c3d4-0000-0000-0000-000000000001"
+    });
+
     options.UseInlineDefinitionsForEnums();
 });
 
