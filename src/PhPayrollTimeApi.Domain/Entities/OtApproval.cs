@@ -13,5 +13,6 @@ public class OtApproval
     public string? IdempotencyKey { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
+    public bool IsStale { get; set; } = false;
     public ICollection<StagedOtAction> StagedActions { get; set; } = new List<StagedOtAction>();
 }

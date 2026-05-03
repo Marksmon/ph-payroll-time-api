@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PhPayrollTimeApi.Domain.Interfaces;
+using PhPayrollTimeApi.Domain.Services;
 using PhPayrollTimeApi.Infrastructure.Persistence;
 using PhPayrollTimeApi.Infrastructure.Services;
 
@@ -27,8 +28,12 @@ public static class InfrastructureServiceExtensions
         services.AddSingleton<IFeatureFlagProvider, HardcodedFeatureFlagProvider>();
         services.AddScoped<IHolidayCalendar, EfHolidayCalendar>();
         services.AddScoped<IHolidayApprovalRepository, EfHolidayApprovalRepository>();
+        services.AddScoped<IApprovalQueueRepository, EfApprovalQueueRepository>();
         // Scoped: fresh per request to isolate log claim state during computation
         services.AddScoped<ILogClaimTracker, InMemoryLogClaimTracker>();
+
+        // Domain service — registered scoped so it receives scoped dependencies (ILogClaimTracker, IHolidayCalendar)
+        services.AddScoped<ComputationEngine>();
 
         return services;
     }
