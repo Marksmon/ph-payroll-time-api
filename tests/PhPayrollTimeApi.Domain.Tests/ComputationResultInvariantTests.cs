@@ -21,7 +21,7 @@ public class ComputationResultInvariantTests
         var result = new ComputationResult(
             Guid.NewGuid(), Guid.NewGuid(),
             Base, Base.AddHours(9),
-            Base.AddMinutes(-30), Base.AddHours(9),
+            Base, Base.AddHours(9),
             60, segments, false);
 
         Assert.Equal(2, result.Segments.Count);

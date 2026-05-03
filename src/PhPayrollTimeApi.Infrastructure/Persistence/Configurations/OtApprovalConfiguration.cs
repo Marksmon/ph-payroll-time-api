@@ -17,6 +17,7 @@ public class OtApprovalConfiguration : IEntityTypeConfiguration<OtApproval>
         builder.Property(o => o.CommittedBySubClaim).HasColumnName("committed_by_sub_claim").HasMaxLength(200);
         builder.Property(o => o.CommittedAt).HasColumnName("committed_at");
         builder.Property(o => o.IdempotencyKey).HasColumnName("idempotency_key").HasMaxLength(500);
+        builder.Property(o => o.IsStale).HasColumnName("is_stale");
         builder.Property(o => o.CreatedAt).HasColumnName("created_at");
         builder.Property(o => o.UpdatedAt).HasColumnName("updated_at");
 
